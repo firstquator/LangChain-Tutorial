@@ -1,4 +1,5 @@
 .env
 langchain
 .gitignore
-.cache
+.cache/
+.streamlit
