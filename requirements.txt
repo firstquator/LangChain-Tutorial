@@ -118,7 +118,7 @@ olefile==0.46
 omegaconf==2.3.0
 onnx==1.14.1
 onnxruntime==1.16.0
-openai==0.28.0
+openai
 opencv-python==4.8.0.76
 openpyxl==3.1.2
 orjson==3.9.9
@@ -195,6 +195,7 @@ soupsieve==2.5
 spacy==3.6.1
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
+speechRecognition
 SQLAlchemy==2.0.22
 sqlitedict==2.1.0
 srsly==2.4.7

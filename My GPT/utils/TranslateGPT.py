@@ -9,7 +9,7 @@ from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 
 # -----------------------------------------------------------------------------------------------------------------------------
 class TranslateGPT:
-    def __init__(self, language='English'):
+    def __init__(self):
         self.client = OpenAI()
         self.llm = ChatOpenAI(
             temperature=0.1,        # 창의성 (0 ~ 2)
@@ -33,15 +33,14 @@ class TranslateGPT:
         ])
 
         self.text = None
-        self.language = language
         self.recognizer = sr.Recognizer()
         self.__initialize_chat_histroy()
         self.__create_chain()
 
-    def run(self, voice):
+    def run(self, voice, language):
         
         self.__paint_history()
-        self.__translate()
+        self.__translate(language)
         self.__text_to_speech(voice)
         audio_file = open("output.mp3", "rb").read()
         with st.sidebar:
@@ -49,7 +48,8 @@ class TranslateGPT:
 
     def input_voice(self):
         with sr.Microphone() as source:
-            audio = self.recognizer.listen(source)
+            self.recognizer.adjust_for_ambient_noise(source)
+            audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
         try:
             self.text = self.recognizer.recognize_google(audio, language='ko-KR')
             self.__send_message(self.text, 'human')
@@ -65,16 +65,24 @@ class TranslateGPT:
 
     def __paint_history(self):
         for message in st.session_state['translateGPT_history']:
-            self.__send_message(message['message'], message['role'], save=False)
+            self.__send_message(message['message'], message['role'], save=False, stream=False)
 
-    def __send_message(self, message, role, save=True):
+    def __send_message(self, message, role, save=True, stream=True):
         with st.chat_message(role):
-            st.markdown(message)
+            if stream:
+                st.write_stream(self.__stream_data(message))
+            else:
+                st.markdown(message)
         if save:
             self.__save_message(message, role)
 
-    def __translate(self):
-        self.translated_text = self.chain.invoke({'languege': self.language, 'question': self.text}).content
+    def __stream_data(self, message):
+        for word in message.split(" "):
+            yield word + " "
+            time.sleep(0.08)
+
+    def __translate(self, language):
+        self.translated_text = self.chain.invoke({'languege': language, 'question': self.text}).content
         self.__send_message(self.translated_text, 'ai')
 
     def __text_to_speech(self, voice="alloy"):
