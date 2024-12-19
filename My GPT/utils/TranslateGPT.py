@@ -35,9 +35,12 @@ class TranslateGPT:
         self.text = None
         self.language = language
         self.recognizer = sr.Recognizer()
+        self.__initialize_chat_histroy()
         self.__create_chain()
 
     def run(self, voice):
+        
+        self.__paint_history()
         self.__translate()
         self.__text_to_speech(voice)
         audio_file = open("output.mp3", "rb").read()
@@ -57,9 +60,12 @@ class TranslateGPT:
         if 'translateGPT_history' not in st.session_state:
             st.session_state['translateGPT_history'] = []
 
+    def __save_message(self, message, role):
+        st.session_state['translateGPT_history'].append({"message": message, "role": role})
+
     def __paint_history(self):
         for message in st.session_state['translateGPT_history']:
-            self.__send_message(message['translateGPT_history'], message['role'], save=False)
+            self.__send_message(message['message'], message['role'], save=False)
 
     def __send_message(self, message, role, save=True):
         with st.chat_message(role):
