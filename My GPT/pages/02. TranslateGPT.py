@@ -27,7 +27,7 @@ with st.sidebar:
             st.session_state['translateGPT_history'] = []
 
     voice = st.selectbox("보이스 선택", ('alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'))
-    language = st.selectbox("번역 언어", ("English", "Japenese", "Chinese"))
+    language = st.selectbox("번역 언어", ("English", "Japenese", "Chinese", "German", "Spanish"))
 
 if translateGPT.text:
     translateGPT.run(voice, language)
