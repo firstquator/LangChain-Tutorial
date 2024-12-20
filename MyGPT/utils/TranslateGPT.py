@@ -112,7 +112,7 @@ class TranslateGPT:
         self.translated_text = self.chain.invoke({'languege': language, 'question': self.text}).content
         self.__text_to_speech(voice)
 
-        audio_file = open(".cache/audios/output.mp3", "rb").read()
+        audio_file = open("./info/audios/output.mp3", "rb").read()
         self.__send_message(self.translated_text, 'ai', audio_file=audio_file, autoplay=True)
         
 
@@ -122,7 +122,7 @@ class TranslateGPT:
             voice=voice,
             input=self.translated_text,
         ) as response:
-            response.stream_to_file(".cache/audios/output.mp3")
+            response.stream_to_file("./info/audios/output.mp3")
     
     def __create_chain(self):
         self.chain = self.prompt | self.llm
