@@ -15,8 +15,8 @@ from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 @st.cache_resource(show_spinner="Embedding File...")
 def embed_file(
     file, 
-    file_dir='uploads/files', 
-    embedding_dir='uploads/embeddings'):
+    file_dir='../uploads/files', 
+    embedding_dir='../uploads/embeddings'):
     file_content = file.read()
     file_path = os.path.join(file_dir, file.name)
     with open(file_path, "wb") as f:
