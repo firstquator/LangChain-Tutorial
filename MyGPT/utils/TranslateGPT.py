@@ -13,7 +13,9 @@ class TranslateGPT:
             model='gpt-3.5-turbo',
             api_key=None,
         ):
-        self.client = OpenAI()
+        self.client = OpenAI(
+            api_key=api_key
+        )
         self.llm = ChatOpenAI(
             api_key=api_key,
             temperature=0.1,        # 창의성 (0 ~ 2)
