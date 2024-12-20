@@ -50,7 +50,7 @@ if "OPENAI_API_KEY" in st.session_state:
             st.session_state['home_history'] = []
         model = st.selectbox("🧠 GPT 모델", ('gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4o-mini', 'gpt-4o'))
             
-    app = BasicGPT(model=model)
+    app = BasicGPT(api_key=st.session_state['OPENAI_API_KEY'], model=model)
     app.run()
 
 else:
