@@ -1,8 +1,12 @@
 import streamlit as st
 
-st.set_page_config(
-    page_title="GPT Application",
-    page_icon="🎈"
-)
+pages = {
+    "GPT MENU": [
+        st.Page("./pages/00. home.py", title="🏠 HOME"),
+        st.Page('./pages/01. DocumenetGPT.py', title="📖 DocumentGPT"),
+        st.Page('./pages/02. TranslateGPT.py', title="🎤 TranslateGPT"),
+    ]
+}
+navigations = st.navigation(pages)
 
-st.title("GPT Application")
+navigations.run()

@@ -51,7 +51,8 @@ class ChatCallbackHandler(BaseCallbackHandler):
         st.session_state['messages'].append({"message": message, "role": role})
 
 class DocumentGPT:
-    def __init__(self, 
+    def __init__(self,
+                 api_key, 
                  file,
                  model='GPT-3.5-turbo',
                  memory=ConversationBufferMemory(
@@ -61,6 +62,7 @@ class DocumentGPT:
         ):
         self.file = file
         self.llm = ChatOpenAI(
+            api_key=api_key,
             model=model,
             temperature=0.1,
             streaming=True,

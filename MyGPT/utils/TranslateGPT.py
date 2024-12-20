@@ -9,9 +9,10 @@ from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 
 # -----------------------------------------------------------------------------------------------------------------------------
 class TranslateGPT:
-    def __init__(self):
+    def __init__(self, api_key):
         self.client = OpenAI()
         self.llm = ChatOpenAI(
+            api_key=api_key,
             temperature=0.1,        # 창의성 (0 ~ 2)
             model='gpt-3.5-turbo',  # 사용 모델 지정 (Default : gpt-3.5-turbo)
             streaming=True,         # Streaming ON
