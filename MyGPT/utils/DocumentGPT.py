@@ -52,9 +52,9 @@ class ChatCallbackHandler(BaseCallbackHandler):
 
 class DocumentGPT:
     def __init__(self,
-                 api_key, 
                  file,
                  model='GPT-3.5-turbo',
+                 api_key=None, 
                  memory=ConversationBufferMemory(
                     max_token_limit=120,
                     return_messages=True,           # 문자열 기반이 아닌, ChatPromptTemplate 에서 사용할 수 있는 형태로 반환
