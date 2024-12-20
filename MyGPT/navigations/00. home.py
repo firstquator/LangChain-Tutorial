@@ -1,5 +1,20 @@
+import os
 import streamlit as st
 from utils.home import BasicGPT
+
+def get_parent_directories():
+    # 현재 파일의 경로
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 상위 경로 리스트 초기화
+    parent_dirs = []
+    
+    # 상위 경로를 계속 추가
+    while current_dir:
+        parent_dirs.append(current_dir)
+        current_dir = os.path.dirname(current_dir)  # 상위 경로로 이동
+    
+    return parent_dirs
 
 st.set_page_config(
     page_title="GPT Application Home",
@@ -9,7 +24,7 @@ st.set_page_config(
 
 st.title("⛪ GPT Application Home")
 st.markdown('---')
-
+st.write(get_parent_directories())
 col1, col2 = st.columns([1, 1], vertical_alignment='top')
 
 with col1:
@@ -37,7 +52,7 @@ with col2:
     """)
 
 st.markdown('---')
-st.image('Media/images/documentGPT.png')
+
 def take_open_api_key():
     if "OPENAI_API_KEY" not in st.session_state:
         st.session_state['OPENAI_API_KEY'] = st.session_state.open_ai_key
