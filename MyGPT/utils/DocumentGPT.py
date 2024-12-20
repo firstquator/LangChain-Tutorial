@@ -17,8 +17,8 @@ st.write(BASE_DIR)
 @st.cache_resource(show_spinner="Embedding File...")
 def embed_file(
     file, 
-    file_dir=os.path.join(BASE_DIR, 'uploads/files/'), 
-    embedding_dir=os.path.join(BASE_DIR, 'uploads/embeddings/')):
+    file_dir='../uploads/files', 
+    embedding_dir='../uploads/embeddings'):
     file_content = file.read()
     file_path = os.path.join(file_dir, file.name)
     with open(file_path, "wb") as f:
