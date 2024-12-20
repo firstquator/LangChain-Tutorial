@@ -6,13 +6,12 @@ from langchain.storage import LocalFileStore
 from langchain.memory import ConversationBufferMemory
 from langchain.embeddings import CacheBackedEmbeddings
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.callbacks.base import BaseCallbackHandler
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder 
 from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 
-@st.cache_data(show_spinner="Embedding File...")
+@st.cache_resource(show_spinner="Embedding File...")
 def embed_file(file, file_dir='./.cache/files/', embedding_dir='./.cache/embeddings/'):
     file_content = file.read()
     file_path = os.path.join(file_dir, file.name)
@@ -34,22 +33,6 @@ def embed_file(file, file_dir='./.cache/files/', embedding_dir='./.cache/embeddi
     vectorstore = FAISS.from_documents(docs, cached_embeddings)
     return vectorstore.as_retriever()
 
-class ChatCallbackHandler(BaseCallbackHandler):
-    message = ""
-
-    def on_llm_start(self, *args, **kwards):
-        self.message_box = st.empty()
-        
-    def on_llm_end(self, *args, **kwards):
-        self.__save_message(self.message, 'ai')
-
-    def on_llm_new_token(self, token, *args, **kwards):
-        self.message += token
-        self.message_box.markdown(self.message)
-
-    def __save_message(self, message, role):
-        st.session_state['messages'].append({"message": message, "role": role})
-
 class DocumentGPT:
     def __init__(self,
                  file,
@@ -65,8 +48,6 @@ class DocumentGPT:
             api_key=api_key,
             model=model,
             temperature=0.1,
-            streaming=True,
-            callbacks=[ChatCallbackHandler()],
         )
         self.memory = memory if 'memory' not in st.session_state else  st.session_state['memory']
         self.prompt = ChatPromptTemplate.from_messages([
@@ -85,44 +66,59 @@ class DocumentGPT:
     def run(self):
         if self.file:
             self.retriever = embed_file(self.file)
-            self.__send_message("저는 준비됐습니다. 언제든 질문해주세요 : )", "ai", save=False)
-            self.__paint_history()
+            self.__send_message("저는 준비됐습니다. 언제든 질문해주세요 : )", "ai", save=False, stream=False)
+            if st.session_state['documentGPT_history']:
+                self.__paint_history()
             message = st.chat_input("업로드한 파일에 대해서 질문해 보세요 :)")
+
             if message:
                 self.__send_message(message, "human")
 
                 chain = self.__create_chain()
+                response = chain.invoke(message)
+                self.__send_message(response.content, 'ai', self.docs, stream=True)
 
-                with st.chat_message('ai'):
-                    self.response = chain.invoke(message)
-
-                self.memory.save_context({"input": message}, {"output": self.response.content})
+                self.memory.save_context({"input": message}, {"output": response.content})
         else:
             st.markdown("여러분이 질문하고 싶은 파일을 Chatbot에게 연결해 주세요!")
-            st.session_state['messages'] = []
+            st.session_state['documentGPT_history'] = []
 
     def __initialize_session(self):
-        if 'messages' not in st.session_state:
-            st.session_state['messages'] = []
+        if 'documentGPT_history' not in st.session_state:
+            st.session_state['documentGPT_history'] = []
 
         if 'memory' not in st.session_state:
             st.session_state['memory'] = self.memory
 
-    def __save_message(self, message, role):
-        st.session_state['messages'].append({"message": message, "role": role})
+    def __save_message(self, message, role, docs):
+        st.session_state['documentGPT_history'].append({"message": message, "role": role, 'docs': docs})
 
-    def __send_message(self, message, role, save=True):
+    def __send_message(self, message, role, docs=None, save=True, stream=True):
         with st.chat_message(role):
-            st.markdown(message)
+            if stream:
+                st.write_stream(self.__stream_data(message))
+            else:
+                st.markdown(message)
+
+            if docs:
+                with st.popover("📋 사용 정보"):
+                    for doc in docs:
+                        st.markdown("🟢 " + doc)
         if save:
-            self.__save_message(message, role)
+            self.__save_message(message, role, docs)
 
     def __paint_history(self):
-        for message in st.session_state['messages']:
-            self.__send_message(message['message'], message['role'], save=False)
+        for message in st.session_state['documentGPT_history']:
+            self.__send_message(message['message'], message['role'], message['docs'], save=False, stream=False)
 
     def __format_docs(self, docs):
-        return "\n\n".join(document.page_content for document in docs)
+        self.docs = [document.page_content for document in docs]
+        return "\n\n".join(self.docs)
+    
+    def __stream_data(self, message):
+        for word in message.split(" "):
+            yield word + " "
+            time.sleep(0.07)
     
     def __load_memory(self, _):
         return self.memory.load_memory_variables({})['history']
