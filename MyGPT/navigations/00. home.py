@@ -37,7 +37,7 @@ with col2:
     """)
 
 st.markdown('---')
-
+st.image('Media/images/documentGPT.png')
 def take_open_api_key():
     if "OPENAI_API_KEY" not in st.session_state:
         st.session_state['OPENAI_API_KEY'] = st.session_state.open_ai_key
