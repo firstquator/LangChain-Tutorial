@@ -12,6 +12,7 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 
 BASE_DIR = current_dir = os.path.dirname(os.path.abspath(__file__))
+st.write(BASE_DIR)
 
 @st.cache_resource(show_spinner="Embedding File...")
 def embed_file(
