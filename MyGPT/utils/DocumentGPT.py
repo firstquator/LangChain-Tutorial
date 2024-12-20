@@ -11,7 +11,6 @@ from langchain.document_loaders import UnstructuredFileLoader
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder 
 from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 
-
 @st.cache_resource(show_spinner="Embedding File...")
 def embed_file(
     file, 
@@ -47,6 +46,7 @@ class DocumentGPT:
                     return_messages=True,           # 문자열 기반이 아닌, ChatPromptTemplate 에서 사용할 수 있는 형태로 반환
                 )
         ):
+        st.write(os.getcwd())
         self.file = file
         self.llm = ChatOpenAI(
             api_key=api_key,
