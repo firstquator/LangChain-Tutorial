@@ -2,20 +2,20 @@ import os
 import streamlit as st
 from utils.home import BasicGPT
 
-def move_to_parent_directory():
+def list_directories_in_parent():
     # 현재 작업 디렉토리 가져오기
     current_dir = os.getcwd()
-    print(f"현재 디렉토리: {current_dir}")
     
     # 상위 디렉토리 경로 계산
     parent_dir = os.path.dirname(current_dir)
     
-    # 상위 디렉토리로 이동
-    os.chdir(parent_dir)
+    # 상위 디렉토리의 모든 항목 가져오기
+    items = os.listdir(parent_dir)
     
-    # 이동 후 현재 작업 디렉토리 확인
-    new_dir = os.getcwd()
-    st.write(f"상위 디렉토리로 이동 후: {new_dir}")
+    # 디렉토리만 필터링
+    directories = [item for item in items if os.path.isdir(os.path.join(parent_dir, item))]
+    
+    st.write(directories)
 
 st.set_page_config(
     page_title="GPT Application Home",
@@ -25,7 +25,7 @@ st.set_page_config(
 
 st.title("⛪ GPT Application Home")
 st.markdown('---')
-move_to_parent_directory()
+list_directories_in_parent()
 col1, col2 = st.columns([1, 1], vertical_alignment='top')
 
 with col1:
