@@ -111,7 +111,7 @@ class TranslateGPT:
         self.translated_text = self.chain.invoke({'languege': language, 'question': self.text}).content
         self.__text_to_speech(voice)
 
-        audio_file = open("./uploads/audios/output.mp3", "rb").read()
+        audio_file = open("uploads/audios/output.mp3", "rb").read()
         self.__send_message(self.translated_text, 'ai', audio_file=audio_file, autoplay=True)
         
 
@@ -121,7 +121,7 @@ class TranslateGPT:
             voice=voice,
             input=self.translated_text,
         ) as response:
-            response.stream_to_file("./uploads/audios/output.mp3")
+            response.stream_to_file("uploads/audios/output.mp3")
 
     def __speech_to_text(self, audio):
         transcription = self.client.audio.transcriptions.create(
