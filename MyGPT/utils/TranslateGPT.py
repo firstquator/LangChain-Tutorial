@@ -10,7 +10,7 @@ from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 # -----------------------------------------------------------------------------------------------------------------------------
 class TranslateGPT:
     def __init__(self, 
-            model='gpt-3.5-turbo',
+            model='gpt-4-turbo',
             api_key=None,
         ):
         self.client = OpenAI(
@@ -38,23 +38,20 @@ class TranslateGPT:
             ("human", "{question}")
         ])
 
+        self.audio = None
         self.text = None
-        self.recognizer = sr.Recognizer()
         self.__initialize_chat_histroy()
         self.__create_chain()
 
     def run(self, voice, language):
+        self.__send_message(self.text, 'human')
         self.__translate(language, voice)
 
     def input_voice(self):
-        with sr.Microphone() as source:
-            self.recognizer.adjust_for_ambient_noise(source)
-            audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
-        try:
-            self.text = self.recognizer.recognize_google(audio, language='ko-KR')
-            self.__send_message(self.text, 'human')
-        except:
-            st.write("Error")
+        self.audio = st.audio_input("🎤 : 녹음 시작 / 🗑 : 음성 초기화")
+        if self.audio:
+            with st.spinner("번역 중 . . ."):
+                self.text = self.__speech_to_text(self.audio)
 
     def paint_history(self):
         for message in st.session_state['translateGPT_history']:
@@ -125,6 +122,15 @@ class TranslateGPT:
             input=self.translated_text,
         ) as response:
             response.stream_to_file("./uploads/audios/output.mp3")
+
+    def __speech_to_text(self, audio):
+        transcription = self.client.audio.transcriptions.create(
+            model='whisper-1',
+            file=audio,
+            language='ko'
+        )
+
+        return transcription.text
     
     def __create_chain(self):
         self.chain = self.prompt | self.llm
