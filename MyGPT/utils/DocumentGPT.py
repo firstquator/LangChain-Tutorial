@@ -14,6 +14,7 @@ from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 @st.cache_resource(show_spinner="Embedding File...")
 def embed_file(
     file, 
+    api_key,
     file_dir=os.path.join(os.getcwd(), 'MyGPT/uploads/files'), 
     embedding_dir=os.path.join(os.getcwd(), 'MyGPT/uploads/embeddings')):
     file_content = file.read()
@@ -30,7 +31,7 @@ def embed_file(
 
     loader = UnstructuredFileLoader(file_path)
     docs = loader.load_and_split(text_splitter=splitter)
-    embeddings = OpenAIEmbeddings()
+    embeddings = OpenAIEmbeddings(api_key=api_key)
     cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_dir)
 
     vectorstore = FAISS.from_documents(docs, cached_embeddings)
@@ -48,6 +49,7 @@ class DocumentGPT:
         ):
         
         self.file = file
+        self.api_key = api_key
         self.llm = ChatOpenAI(
             api_key=api_key,
             model=model,
@@ -69,7 +71,7 @@ class DocumentGPT:
 
     def run(self):
         if self.file:
-            self.retriever = embed_file(self.file)
+            self.retriever = embed_file(self.file, self.api_key)
             self.__send_message("저는 준비됐습니다. 언제든 질문해주세요 : )", "ai", save=False, stream=False)
             if st.session_state['documentGPT_history']:
                 self.__paint_history()
