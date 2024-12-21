@@ -14,8 +14,8 @@ from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 @st.cache_resource(show_spinner="Embedding File...")
 def embed_file(
     file, 
-    file_dir='../uploads/files', 
-    embedding_dir='../uploads/embeddings'):
+    file_dir=os.path.join(os.getcwd(), '/uploads/files'), 
+    embedding_dir=os.path.join(os.getcwd(), '/uploads/embeddings')):
     file_content = file.read()
     file_path = os.path.join(file_dir, file.name)
     with open(file_path, "wb") as f:
@@ -46,7 +46,7 @@ class DocumentGPT:
                     return_messages=True,           # 문자열 기반이 아닌, ChatPromptTemplate 에서 사용할 수 있는 형태로 반환
                 )
         ):
-        st.write(os.getcwd())
+        
         self.file = file
         self.llm = ChatOpenAI(
             api_key=api_key,
