@@ -117,7 +117,7 @@ class TranslateGPT:
         self.__text_to_speech(voice)
 
         # with open(os.path.join(self.audio_path, 'output.mp3'), 'rb') as audio_file:
-        audio_file = audio_file.read()
+        audio_file = open(os.path.join(self.audio_path, 'output.mp3'), 'rb').read()
         self.__send_message(self.translated_text, 'ai', audio_file=audio_file, autoplay=True)
         
 
