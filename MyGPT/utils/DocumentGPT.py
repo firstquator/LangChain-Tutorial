@@ -11,12 +11,20 @@ from langchain.document_loaders import UnstructuredFileLoader
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder 
 from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 
+DIR_NAME = "MyGPT"
+BASE_BIR = os.getcwd() if DIR_NAME in os.getcwd() else os.path.join(os.getcwd(), DIR_NAME)
+FILE_DIR = os.path.join(BASE_BIR, 'uploads/files')
+EMBED_DIR = os.path.join(BASE_BIR, 'uploads/embeddings')
+
+# -----------------------------------------------------------------------------------------------------------------------------
+
 @st.cache_resource(show_spinner="Embedding File...")
 def embed_file(
-    file, 
-    api_key,
-    file_dir=os.path.join(os.getcwd(), 'MyGPT/uploads/files'), 
-    embedding_dir=os.path.join(os.getcwd(), 'MyGPT/uploads/embeddings')):
+        file, 
+        api_key,
+        file_dir=FILE_DIR, 
+        embedding_dir=EMBED_DIR
+    ):
     file_content = file.read()
     file_path = os.path.join(file_dir, file.name)
     with open(file_path, "wb") as f:
@@ -40,7 +48,7 @@ def embed_file(
 class DocumentGPT:
     def __init__(self,
                  file,
-                 model='GPT-3.5-turbo',
+                 model='gpt-4o-mini',
                  api_key=None, 
                  memory=ConversationBufferMemory(
                     max_token_limit=120,

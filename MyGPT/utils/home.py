@@ -8,7 +8,7 @@ from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 class BasicGPT:
     def __init__(
             self,
-            model='gpt-4o',
+            model='gpt-4o-mini',
             memory=ConversationBufferMemory(
                 max_token_limit=120,
                 return_messages=True,

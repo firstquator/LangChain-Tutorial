@@ -5,14 +5,19 @@ from openai import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.callbacks import StreamingStdOutCallbackHandler
-from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
+
+DIR_NAME = "MyGPT"
+BASE_DIR = os.getcwd() if DIR_NAME in os.getcwd() else os.path.join(os.getcwd(), DIR_NAME)
+AUDIO_DIR = os.path.join(BASE_DIR, 'uploads/audios')
 
 # -----------------------------------------------------------------------------------------------------------------------------
 class TranslateGPT:
     def __init__(self, 
-            model='gpt-4-turbo',
+            model='gpt-4o-mini',
             api_key=None,
+            audio_path=AUDIO_DIR,
         ):
+        self.audio_path = audio_path
         self.client = OpenAI(
             api_key=api_key
         )
@@ -111,7 +116,8 @@ class TranslateGPT:
         self.translated_text = self.chain.invoke({'languege': language, 'question': self.text}).content
         self.__text_to_speech(voice)
 
-        audio_file = open(os.path.join(os.getcwd(), "MyGPT/uploads/audios/output.mp3"), "rb").read()
+        with open(os.path.join(self.audio_path, 'output.mp3'), 'rb') as audio_file:
+            audio_file = audio_file.read()
         self.__send_message(self.translated_text, 'ai', audio_file=audio_file, autoplay=True)
         
 
@@ -121,7 +127,7 @@ class TranslateGPT:
             voice=voice,
             input=self.translated_text,
         ) as response:
-            response.stream_to_file(os.path.join(os.getcwd(), "MyGPT/uploads/audios/output.mp3"))
+            response.stream_to_file(os.path.join(self.audio_path, "output.mp3").replace("/", "\\"))
 
     def __speech_to_text(self, audio):
         transcription = self.client.audio.transcriptions.create(

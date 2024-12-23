@@ -9,6 +9,8 @@ st.set_page_config(
 
 st.title("Document GPT")
 
+# -----------------------------------------------------------------------------------------------------------------------------
+
 def take_open_api_key():
     if "OPENAI_API_KEY" not in st.session_state:
         st.session_state['OPENAI_API_KEY'] = st.session_state.open_ai_key
@@ -19,7 +21,7 @@ if "OPENAI_API_KEY" in st.session_state:
     with st.sidebar:
         if st.button('🔄 대화 초기화'):
             st.session_state['documentGPT_history'] = []
-        model = st.selectbox("🧠 GPT 모델", ('gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4o-mini', 'gpt-4o'))
+        model = st.selectbox("🧠 GPT 모델", ('gpt-4o-mini', 'gpt-4-turbo',  'gpt-4o'))
         file = st.file_uploader("💾 파일 업로드", type=["pdf", "txt", "docx"])
             
     app = DocumentGPT(file, model, api_key=st.session_state['OPENAI_API_KEY'])
