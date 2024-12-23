@@ -59,11 +59,11 @@ if "OPENAI_API_KEY" in st.session_state:
         if choice == 'File':
             file = st.file_uploader("💾 파일 업로드", type=['pdf', 'txt', 'docx'])
             if file:
-                quizGPT = QuizGPT(type='file', file=file, nums=nums, num_choices=num_choices, level=level, language=language)
+                quizGPT = QuizGPT(api_key=st.session_state['OPENAI_API_KEY'],type='file', file=file, nums=nums, num_choices=num_choices, level=level, language=language)
         elif choice == "Wikipedia Article":
             topic = st.text_input("Search Wikipedia . . .")
             if topic:
-                quizGPT = QuizGPT(type='wiki', topic=topic, nums=nums, num_choices=num_choices, level=level, language=language)
+                quizGPT = QuizGPT(api_key=st.session_state['OPENAI_API_KEY'] , type='wiki', topic=topic, nums=nums, num_choices=num_choices, level=level, language=language)
         
 
     if not quizGPT:
