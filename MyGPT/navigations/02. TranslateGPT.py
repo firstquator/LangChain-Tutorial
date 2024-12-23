@@ -28,7 +28,7 @@ if "OPENAI_API_KEY" in st.session_state:
         translateGPT.input_voice()
 
         voice = st.selectbox("🔊 보이스 선택", ('alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'))
-        language = st.selectbox("🗣️ 번역 언어", ("English", " Japenese", "Chinese", "German", "Spanish"))
+        language = st.selectbox("🗣️ 번역 언어", ("English", "Korean", " Japenese", "Chinese", "German", "Spanish"))
 
     if st.session_state['translateGPT_history']:
         translateGPT.paint_history()
